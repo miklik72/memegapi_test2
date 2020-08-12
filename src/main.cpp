@@ -4,6 +4,8 @@
 MeEncoderOnBoard Encoder_1(SLOT1);
 MeEncoderOnBoard Encoder_2(SLOT2);
 MeEncoderOnBoard Encoder_3(SLOT3);
+MeMegaPiDCMotor Arm_1(PORT4B);
+
 MeUltrasonicSensor sonic(PORT_6);
 Me7SegmentDisplay disp(PORT_8);
 
@@ -45,11 +47,24 @@ void isr_process_encoder3(void)
 
 long lasttime = millis();
 
+void arm_open() {
+  Arm_1.run(-255);
+  delay(1200);
+  Arm_1.stop();
+}
+
+void arm_close() {
+  Arm_1.run(100);
+  delay(3000);
+  Arm_1.stop();
+}
+
 void setup()
 {
   attachInterrupt(Encoder_1.getIntNum(), isr_process_encoder1, RISING);
   attachInterrupt(Encoder_2.getIntNum(), isr_process_encoder2, RISING);
   attachInterrupt(Encoder_3.getIntNum(), isr_process_encoder3, RISING);
+  arm_open();
   Serial.begin(115200);
   disp.init();
   disp.set(BRIGHTNESS_2);
@@ -85,10 +100,12 @@ void setup()
   Encoder_1.setPulsePos(0);
   Encoder_2.setPulsePos(0);
   Encoder_3.setPulsePos(0);
-
   //Encoder_1.moveTo(1000,150);
   //Encoder_2.moveTo(-1000,150);
   //Encoder_3.moveTo(500,100);
+  //Arm_1.run(50);
+  delay(1000);
+  arm_close();
 }
 
 void loop() {
